@@ -12,7 +12,9 @@ const customError = (data) => {
 // with a Boolean value indicating whether or not they
 // should be required.
 const customParams = {
-  city: ['q','city','town'],
+  start_date: ['start_date','start','sdate'],
+  end_date: ['end_date','end','edate'],
+  city: ['city','q','town'],
   endpoint: false
 }
 
@@ -20,14 +22,18 @@ const createRequest = (input, callback) => {
   // The Validator helps you validate the Chainlink request data
   const validator = new Validator(callback, input, customParams)
   const jobRunID = validator.validated.id
-  const endpoint = validator.validated.data.endpoint || 'weather'
-  const url = `http://api.openweathermap.org/data/2.5/${endpoint}`
-  const q = validator.validated.data.city.toUpperCase()
-  const appid = process.env.API_KEY;
+  const endpoint = validator.validated.data.endpoint || 'history/daily'
+  const url = `https://api.weatherbit.io/v2.0/${endpoint}`
+  const city = validator.validated.data.city.toUpperCase()
+  const start_date = validator.validated.data.start_date
+  const end_date = validator.validated.data.end_date
+  const key = process.env.API_KEY;
 
   const params = {
-    q,
-    appid
+    city,
+    start_date,
+    end_date,
+    key
   }
 
   // This is where you would add method and headers
@@ -47,7 +53,7 @@ const createRequest = (input, callback) => {
       // It's common practice to store the desired value at the top-level
       // result key. This allows different adapters to be compatible with
       // one another.
-      response.data.result = Requester.validateResultNumber(response.data, ['main','temp'])
+      response.data.result = Requester.validateResultNumber(response.data, ['data',0,'pres'])
       callback(response.status, Requester.success(jobRunID, response))
     })
     .catch(error => {
