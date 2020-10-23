@@ -1,4 +1,5 @@
 const { Requester, Validator } = require('@chainlink/external-adapter')
+const { json } = require('body-parser')
 
 // Define custom error scenarios for the API.
 // Return true for the adapter to retry.
@@ -53,7 +54,7 @@ const createRequest = (input, callback) => {
       // It's common practice to store the desired value at the top-level
       // result key. This allows different adapters to be compatible with
       // one another.
-      response.data.result = Requester.validateResultNumber(response.data, ['data',0,'pres'])
+      response.data.result = Requester.validateResultNumber(response.data, ['data','0','precip'])
       callback(response.status, Requester.success(jobRunID, response))
     })
     .catch(error => {
